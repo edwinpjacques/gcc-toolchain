@@ -39,20 +39,31 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install 
 ####################################################################################################
 # Download steps
 ####################################################################################################
+# These must match the versions in the bootlin sysroot
+ARG GCC_VERSION=11.2.0
+ARG KERNEL_VERSION=5.4
+ARG GLIBC_VERSION=2.34
+
+ENV GCC_VERSION="${GCC_VERSION}"
+ENV KERNEL_VERSION="${KERNEL_VERSION}"
+ENV GLIBC_VERSION="${GLIBC_VERSION}"
 
 FROM base_image AS kernel_download
 WORKDIR /downloads/kernel
-RUN curl --fail-early --location https://github.com/torvalds/linux/archive/refs/tags/v4.9.tar.gz \
+# Match the version from the bootlin toolchain.
+RUN curl --fail-early --location https://github.com/torvalds/linux/archive/refs/tags/v${KERNEL_VERSION}.tar.gz \
         | tar --gzip --extract --strip-components=1 --file -
 
 FROM base_image AS glibc_download
 WORKDIR /downloads/glibc
-RUN curl --fail-early --location https://ftp.gnu.org/gnu/glibc/glibc-2.26.tar.xz \
+# Match the version from the bootlin toolchain.
+RUN curl --fail-early --location https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VERSION}.tar.xz \
         | tar --xz --extract --strip-components=1 --file -
 
 FROM base_image AS gcc_download
 WORKDIR /downloads/gcc
-RUN curl --fail-early --location https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz \
+# Match the version from the bootlin toolchain.
+RUN curl --fail-early --location https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz \
         | tar --xz --extract --strip-components=1 --file -
 RUN ./contrib/download_prerequisites
 
@@ -103,19 +114,28 @@ RUN curl --fail-early --location https://www.x.org/releases/X11R7.7/src/lib/libX
 
 FROM base_image AS build_image
 
+ARG AARCH64_SYSROOT_IMAGE=https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/aarch64--glibc--bleeding-edge-2021.11-1.tar.bz2
+ENV AARCH64_SYSROOT_IMAGE="${AARCH64_SYSROOT_IMAGE}"
+
+ARG ARMV7_SYSROOT_IMAGE=https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/armv7-eabihf--glibc--bleeding-edge-2021.11-1.tar.bz2
+ENV ARMV7_SYSROOT_IMAGE="${ARMV7_SYSROOT_IMAGE}"
+
+ARG X86_64_SYSROOT_IMAGE=https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64-core-i7/tarballs/x86-64-core-i7--glibc--bleeding-edge-2021.11-1.tar.bz2
+ENV X86_64_SYSROOT_IMAGE="${X86_64_SYSROOT_IMAGE}"
+
 WORKDIR /opt/gcc/aarch64
-RUN curl --fail-early --location https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/aarch64--glibc--stable-2018.11-1.tar.bz2 \
+RUN curl --fail-early --location ${AARCH64_SYSROOT_IMAGE} \
         | tar --bzip --extract --strip-components=1 --file -
 WORKDIR /opt/gcc/aarch64/bin
 RUN rm pkg-config
 WORKDIR /opt/gcc/armv7
-RUN curl --fail-early --location https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/armv7-eabihf--glibc--stable-2018.11-1.tar.bz2 \
+RUN curl --fail-early --location ${ARMV7_SYSROOT_IMAGE} \
         | tar --bzip --extract --strip-components=1 --file -
 WORKDIR /opt/gcc/armv7/bin
 RUN rm pkg-config
 RUN --mount=source=create_symlinks.sh,target=/usr/bin/create_symlinks.sh create_symlinks.sh arm-linux- arm-linux-gnueabihf-
 WORKDIR /opt/gcc/x86_64
-RUN curl --fail-early --location https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64-core-i7/tarballs/x86-64-core-i7--glibc--stable-2018.11-1.tar.bz2 \
+RUN curl --fail-early --location ${X86_64_SYSROOT_IMAGE} \
         | tar --bzip --extract --strip-components=1 --file -
 WORKDIR /opt/gcc/x86_64/bin
 RUN rm pkg-config
@@ -147,7 +167,7 @@ COPY --from=kernel /var/buildlibs/kernel /var/buildlibs/kernel
 COPY --from=glibc_download /downloads/glibc /build/glibc
 WORKDIR /build/glibc/build
 RUN --mount=source=configure.sh,target=/usr/bin/configure.sh configure.sh \
-        --enable-kernel=4.9 \
+        --enable-kernel=${KERNEL_VERSION} \
         --disable-werror \
         --prefix=/usr \
         --with-headers=/var/buildlibs/kernel/usr/include \

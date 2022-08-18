@@ -225,7 +225,7 @@ def _render_tool_paths(rctx, repository_name, toolchain_files_repository_name, b
         tool_paths[name] = wrapped_tool_path
     return tool_paths
 
-_DEFAULT_GCC_VERSION = "10.3.0"
+_DEFAULT_GCC_VERSION = "11.2.0"
 
 def gcc_register_toolchain(
     name,
@@ -308,21 +308,21 @@ ARCHS = struct(
 
 _SYSROOTS = {
     "aarch64": struct(
-        sha256 = "b23690426137bdbf23c9572d8d6b3db6de30dc80b7cac148fb98b6d50d9fb192",
-        url = "https://github.com/aspect-build/gcc-toolchain/releases/download/0.3.0/sysroot-base-aarch64.tar.xz",
+        sha256 = "9eed6df5512d938d3597de190849603863de455c7700037d7c6d689bd8bd70c3",
+        url = "https://svl-artifactory.juniper.net/artifactory/atom-static-prod/gcc-toolchain/releases/0.3.1/sysroot-base-aarch64.tar.xz",
     ),
     "armv7": struct(
-        sha256 = "049865707f6c4c62e244b28ff4c7fe597539b0cff3bc6d4ca80ab93f845240e7",
-        url = "https://github.com/aspect-build/gcc-toolchain/releases/download/0.3.0/sysroot-base-armv7.tar.xz",
+        sha256 = "37cdb198c86bec0656a3d8805f84f1dea8be979b90ca58a0081cc83d1195899c",
+        url = "https://svl-artifactory.juniper.net/artifactory/atom-static-prod/gcc-toolchain/releases/0.3.1/sysroot-base-armv7.tar.xz",
     ),
     "x86_64": struct(
-        sha256 = "b9993ee16de8c2c8111c4baa9ea1c554ef74c2b32b5768dc93fcec013b549d68",
-        url = "https://github.com/aspect-build/gcc-toolchain/releases/download/0.3.0/sysroot-base-x86_64.tar.xz",
+        sha256 = "933d45205265ef571e64143a36fcf61ead90560f8857d1b26d1b73ae9247c2eb",
+        url = "https://svl-artifactory.juniper.net/artifactory/atom-static-prod/gcc-toolchain/releases/0.3.1/sysroot-base-x86_64.tar.xz",
     ),
-    "x86_64-X11": struct(
-        sha256 = "36caaa7b9445ffe46142becdbce5733843d99efa70ac027ba82c2909f0ae6dc4",
-        url = "https://github.com/aspect-build/gcc-toolchain/releases/download/0.3.0/sysroot-X11-x86_64.tar.xz",
-    ),
+    # "x86_64-X11": struct(
+    #     sha256 = "933d45205265ef571e64143a36fcf61ead90560f8857d1b26d1b73ae9247c2eb",
+    #     url = "https://github.com/aspect-build/gcc-toolchain/releases/download/0.3.0/sysroot-X11-x86_64.tar.xz",
+    # ),
 }
 
 _TOOLCHAINS = {
@@ -341,6 +341,23 @@ _TOOLCHAINS = {
             sha256 = "6fe812add925493ea0841365f1fb7ca17fd9224bab61a731063f7f12f3a621b0",
             strip_prefix = "x86-64--glibc--stable-2021.11-5",
             url = "https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64/tarballs/x86-64--glibc--stable-2021.11-5.tar.bz2",
+        ),
+    },
+    "11.2.0": {
+        "aarch64": struct(
+            sha256 = "55b90e0e844ac02a7fc3352be42b7cb9bb3ec582c23649dbb77e05c60eb84434",
+            strip_prefix = "aarch64--glibc--bleeding-edge-2021.11-1",
+            url = "https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/aarch64--glibc--bleeding-edge-2021.11-1.tar.bz2",
+        ),
+        "armv7": struct(
+            sha256 = "1d2b488d047d1a1694305613adb918167a36bf0857cd6bda3ce87a0e4c2b7f28",
+            strip_prefix = "armv7-eabihf--glibc--bleeding-edge-2021.11-1",
+            url = "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/armv7-eabihf--glibc--bleeding-edge-2021.11-1.tar.bz2",
+        ),
+        "x86_64": struct(
+            sha256 = "a3dbfcd3347a72ca344ae77882f929615776ea9b1b058eeea0a0915e7db89b69",
+            strip_prefix = "x86-64-core-i7--glibc--bleeding-edge-2021.11-1",
+            url = "https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64-core-i7/tarballs/x86-64-core-i7--glibc--bleeding-edge-2021.11-1.tar.bz2",
         ),
     },
 }

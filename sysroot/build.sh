@@ -43,7 +43,7 @@ output=$(realpath "${output_dir}/sysroot-${variant}-${arch}.tar.xz")
 image_tag=$(tr '[:upper:]' '[:lower:]' <<<"sysroot-${variant}-${arch}")
 
 (cd "${sysroot_dir}"; \
-    docker build \
+    DOCKER_BUILDKIT=1 docker build \
         --build-arg ARCH="${arch}" \
         --tag "${image_tag}" \
         --target "sysroot_${variant}" \

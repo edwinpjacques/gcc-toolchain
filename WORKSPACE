@@ -43,11 +43,12 @@ gcc_register_toolchain(
     target_arch = ARCHS.armv7,
 )
 
-gcc_register_toolchain(
-    name = "gcc_toolchain_x86_64",
-    sysroot_variant = "x86_64-X11",
-    target_arch = ARCHS.x86_64,
-)
+# Example if you have a toolchain that include X11 extra libraries.
+# gcc_register_toolchain(
+#     name = "gcc_toolchain_x86_64",
+#     sysroot_variant = "x86_64-X11",
+#     target_arch = ARCHS.x86_64,
+# )
 
 load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
 
